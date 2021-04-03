@@ -5,8 +5,10 @@ const path = require("path")
 
 const app = express();
 
+app.set('view engine', 'ejs');
+
 app.get('/', function (req, res) {
-    res.sendFile(path.join(__dirname + '/index.html'));
+    res.render("index");
 });
 
 app.listen(3000, function () {
