@@ -4,18 +4,43 @@ const bodyParser = require("body-parser");
 const path = require("path");
 const passport = require("passport");
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
+const mongoose = require('mongoose');
+const findOrCreate = require("mongoose-findorcreate");
+
+mongoose.connect("mongodb://localhost:27017/sikretoDB", {
+    useNewUrlParser: true
+});
 
 const app = express();
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+passport.serializeUser(function (user, done) {
+    done(null, user);
+});
+
+passport.deserializeUser(function (user, done) {
+    done(null, user);
+});
+
+var Schema = mongoose.Schema;
+var UserSchema = new Schema({
+    facebookId: Number
+});
+UserSchema.plugin(findOrCreate);
+var User = mongoose.model('User', UserSchema);
 
 passport.use(new GoogleStrategy({
         clientID: "90371486224-au7t697muie2kivm3fdql4s3hfhniett.apps.googleusercontent.com",
         clientSecret: "qDmfI5SczQvB5nWnJfGVzxNg",
-        callbackURL: "http://www.example.com/auth/google/callback"
+        callbackURL: "http://localhost:3000/auth/google/callback"
     },
     function (accessToken, refreshToken, profile, cb) {
         User.findOrCreate({
             googleId: profile.id
         }, function (err, user) {
+            console.log('A new uxer from "%s" was inserted', user.googleId);
             return cb(err, user);
         });
     }
@@ -38,7 +63,7 @@ app.get('/auth/google/callback',
     }),
     function (req, res) {
         // Successful authentication, redirect home.
-        res.redirect('/');
+        res.send("Congratulations, you did it!");
     });
 
 app.listen(3000, function () {
