@@ -26,7 +26,7 @@ passport.deserializeUser(function (user, done) {
 
 var Schema = mongoose.Schema;
 var UserSchema = new Schema({
-    facebookId: Number
+    googleId: Number
 });
 UserSchema.plugin(findOrCreate);
 var User = mongoose.model('User', UserSchema);
@@ -40,7 +40,7 @@ passport.use(new GoogleStrategy({
         User.findOrCreate({
             googleId: profile.id
         }, function (err, user) {
-            console.log('A new uxer from "%s" was inserted', user.googleId);
+            console.log('A new user from "%s" was inserted', user.googleId);
             return cb(err, user);
         });
     }
